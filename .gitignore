@@ -27,3 +27,10 @@
 *.exe
 *.out
 *.app
+
+# Scons
+.sconsign.dblite
+
+# folder
+output
+

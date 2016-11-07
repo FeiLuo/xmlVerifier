@@ -1,0 +1,30 @@
+Import('env')
+Import('config')
+import os
+
+env_xerces = env.Clone()
+
+xerces_root = os.path.join(env_xerces['topdir'], 'vendors', 'xerces')
+xerces_lib = os.path.join(xerces_root, 'src/.libs/libxerces-c.a')
+xerces_output_lib = os.path.join(env_xerces['output_libs'], 'libxerces.a')
+
+xerces_exclude_files = [
+    'config.h',
+    'conftest.c'
+]
+
+xerces_sources = []
+xerces_sources = env_xerces.RecusiveGlobFiles(
+    xerces_root,
+    ['*.c', '*.h'], ['tests', 'samples'], xerces_exclude_files
+)
+xerces_targets = [
+    xerces_lib,
+    xerces_output_lib
+]
+
+xerces_command = 'cd %s && ./configure CXX=g++ CC=gcc --host=x86-linux --disable-shared --enable-transcoder-iconv && make clean && make && cp -f %s %s' %(xerces_root, xerces_lib, xerces_output_lib)
+
+xerceslib = env_xerces.Command(xerces_targets, xerces_sources, xerces_command)
+
+env['main_depends'] = xerceslib

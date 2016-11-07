@@ -1,0 +1,14 @@
+Import('env')
+Import('config')
+
+source = [
+    'main.cpp',
+]
+
+e = env.Clone()
+
+e['LIBS'] = env['lib_list']
+
+main = e.Program(config['output_bin']+'/xmlVerifier', source)
+
+e.Depends(main, e['main_depends'])
