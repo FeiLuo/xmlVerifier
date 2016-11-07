@@ -105,6 +105,8 @@ env['CPPPATH'] = [
     '.',
     '#',
     '#/vendors/xerces/src',
+    '#/framework/src',
+    '#/xmlwrapper/src',
 ]
 
 env['LIBPATH'] = [
@@ -119,6 +121,8 @@ env['lib_list'] = [
 
 scons_list = [
     'vendors',
+    'xmlwrapper/src',
+    'framework/src',
     'main/src'
 ]
 

@@ -1,0 +1,12 @@
+Import('env')
+Import('config')
+
+source = [
+    'XmlParser.cpp',
+]
+
+e = env.Clone()
+
+# Generate Library
+lib = e.Library(config['output_libs'] + '/xmlwrapper', source)
+
