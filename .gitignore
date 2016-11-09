@@ -33,4 +33,10 @@
 
 # folder
 output
+vendors/xerces-c-3.1.4
+vendors/xerces
 
+# xml files
+xml/*.xml
+xml/*.xsd
+xml/*.spp

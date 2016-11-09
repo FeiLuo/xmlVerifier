@@ -2,6 +2,8 @@ Import('env')
 Import('config')
 
 source = [
+    'XmlErrorReporter.cpp',
+    'XmlNode.cpp',
     'XmlParser.cpp',
 ]
 

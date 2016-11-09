@@ -1,8 +1,10 @@
 #ifndef TYPES_H
-#defind TYPES_H
+#define TYPES_H
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef bool                        Boolean;    // 1 bit wide boolean Byte 
 typedef uint8_t                     Byte;       // 8 bit wide byte Byte 

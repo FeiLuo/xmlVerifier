@@ -2,11 +2,12 @@ Import('env')
 Import('config')
 import os
 
-env_xerces = env.Clone()
-
-xerces_root = os.path.join(env_xerces['topdir'], 'vendors', 'xerces')
+xerces_root = os.path.join(env['topdir'], 'vendors', 'xerces')
 xerces_lib = os.path.join(xerces_root, 'src/.libs/libxerces-c.a')
-xerces_output_lib = os.path.join(env_xerces['output_libs'], 'libxerces.a')
+xerces_output_lib = os.path.join(env['output_libs'], 'libxerces.a')
+
+# build xerces library
+env_xerces = env.Clone()
 
 xerces_exclude_files = [
     'config.h',
@@ -19,12 +20,20 @@ xerces_sources = env_xerces.RecusiveGlobFiles(
     ['*.c', '*.h'], ['tests', 'samples'], xerces_exclude_files
 )
 xerces_targets = [
-    xerces_lib,
-    xerces_output_lib
+    xerces_lib
 ]
 
-xerces_command = 'cd %s && ./configure CXX=g++ CC=gcc --host=x86-linux --disable-shared --enable-transcoder-iconv && make clean && make && cp -f %s %s' %(xerces_root, xerces_lib, xerces_output_lib)
-
+if env['config']['build'] == 'debug':
+    xerces_command = 'cd %s && ./configure CXX=g++ CC=gcc --host=x86-linux --disable-shared --enable-transcoder-iconv --disable-network CFLAGS=-O0 CXXFLAGS=-O0 && make clean && make' %(xerces_root)
+else:
+    xerces_command = 'cd %s && ./configure CXX=g++ CC=gcc --host=x86-linux --disable-shared --enable-transcoder-iconv --disable-network CFLAGS=-O3 CXXFLAGS=-O3 && make clean && make' %(xerces_root)
 xerceslib = env_xerces.Command(xerces_targets, xerces_sources, xerces_command)
 
-env['main_depends'] = xerceslib
+# copy xerces library
+env_xerces_copy = env.Clone()
+xerces_copy_command = "cp -f %s %s" %(xerces_lib, xerces_output_lib)
+xerces_copied_lib = env_xerces_copy.Command(xerces_output_lib, xerces_lib, xerces_copy_command)
+env_xerces_copy.Depends(xerces_copied_lib, xerceslib)
+
+# add to main depends
+env['main_depends'] = xerces_copied_lib

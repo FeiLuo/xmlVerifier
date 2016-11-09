@@ -79,13 +79,21 @@ cc_flags = ['-Wall', '-fno-strict-aliasing', '-Werror', '-std=gnu++11']  # for c
 c_flags = []   # for c, it will be added to CFLAGS
 cxx_flags = [] # for c++, it will be added to CXXFLAGS
 link_flags = ['-static', '-m64']
+config = {
+    'build': '',     # 'debug' or 'release'
+}
 
 # Read the optimization mode
 if ARGUMENTS.has_key('opt'):
     cc_flags.append('-O'+ARGUMENTS.get('opt'))
+    if ARGUMENTS.get('opt') != '0':
+        config['build'] = 'release'
+    else:
+        config['build'] = 'debug'
 else:
     cc_flags.append('-O0')
     cc_flags.append('-D_DEBUG_')
+    config['build'] = 'debug'
 
 # Environments
 env = Environment(Env = os.environ)
@@ -93,6 +101,7 @@ env['topdir'] = topdir
 env['output_root'] = output_root_dir
 env['output_libs'] = output_libs_dir
 env['output_bin'] = output_bin_dir
+env['config'] = config
 
 env['CCFLAGS'] = cc_flags
 env['CFLAGS'] = c_flags
@@ -114,12 +123,15 @@ env['LIBPATH'] = [
 ]
 
 env['lib_list'] = [
+    'xmlwrapper',
+    'framework',
     'xerces',
     'pthread',
     'dl',
 ]
 
 scons_list = [
+    'xml',
     'vendors',
     'xmlwrapper/src',
     'framework/src',

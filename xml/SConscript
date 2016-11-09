@@ -1,0 +1,21 @@
+Import('env')
+Import('config')
+import os
+
+xml_root = os.path.join(env['topdir'], 'xml')
+xml_target_root = os.path.join(env['output_bin'], 'xml')
+
+# build xerces library
+env_xml = env.Clone()
+
+xml_sources = []
+xml_sources = env_xml.RecusiveGlobFiles(
+    xml_root,
+    ['*.xml', '*.xsd']
+)
+xml_targets = []
+
+for source in xml_sources:
+    dest = source.abspath.replace(xml_root, xml_target_root)
+    env_xml.Command(dest, source, "cp -f $SOURCE $TARGET")
+
