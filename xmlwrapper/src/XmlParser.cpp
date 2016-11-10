@@ -16,6 +16,7 @@
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/framework/Wrapper4InputSource.hpp>
 #include <xercesc/util/OutOfMemoryException.hpp>
+#include <xercesc/validators/common/Grammar.hpp>
 #include <fstream>
 
 Boolean XmlParser::Initialize()
@@ -44,6 +45,7 @@ void XmlParser::Uninitialize()
 XmlParser::XmlParser(const Uint8* data, const Uint32 len)
   : mParser(NULL),
     mDocument(NULL),
+    mErrorHandler(NULL),
     mParseError(false)
 {
     InitializeXmlParser();
@@ -88,6 +90,7 @@ XmlParser::XmlParser(const Uint8* data, const Uint32 len)
 XmlParser::XmlParser(const char* xmlFileName)
   : mParser(NULL),
     mDocument(NULL),
+    mErrorHandler(NULL),
     mParseError(false)
 {
     InitializeXmlParser();
@@ -96,11 +99,6 @@ XmlParser::XmlParser(const char* xmlFileName)
     {
         mParser->resetDocumentPool();
         mDocument = mParser->parseURI(xmlFileName);
-    }
-    catch (const OutOfMemoryException&)
-    {
-        ErrorMsg() << "OutOfMemoryException" << endl;
-        mParseError = true;
     }
     catch (const XMLException& e)
     {
@@ -119,12 +117,18 @@ XmlParser::XmlParser(const char* xmlFileName)
 
         mParseError = true;
     }
-
     catch (...)
     {
         ErrorMsg() << "An error occurred during parsing\n " << endl;
         mParseError = true;
     }
+
+    if (mErrorHandler->getSawErrors())
+    {
+        ErrorMsg() << "\nErrors occurred, no output available\n" << endl;
+        mParseError = true;
+    }
+
 }
 
 XmlParser::~XmlParser()
@@ -135,9 +139,9 @@ XmlParser::~XmlParser()
 void XmlParser::InitializeXmlParser()
 {
     UninitializeXmlParser();
-    
+
     AbstractDOMParser::ValSchemes valScheme = AbstractDOMParser::Val_Auto;
-    bool                       doNamespaces       = false;
+    bool                       doNamespaces       = true;
     bool                       doSchema           = true;
     bool                       schemaFullChecking = true;
 //    bool                       doList = false;
@@ -146,13 +150,12 @@ void XmlParser::InitializeXmlParser()
 //    bool                       printOutEncounteredEles = false;
     char                       localeStr[64];
     memset(localeStr, 0, sizeof localeStr);
-
+    
     // Instantiate the DOM mParser.
     static const XMLCh gLS[] = { chLatin_L, chLatin_S, chNull };
     DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(gLS);
     mParser = ((DOMImplementationLS*)impl)->createLSParser(DOMImplementationLS::MODE_SYNCHRONOUS, 0);
     DOMConfiguration  *config = mParser->getDomConfig();
-
     config->setParameter(XMLUni::fgDOMNamespaces, doNamespaces);
     config->setParameter(XMLUni::fgXercesSchema, doSchema);
     config->setParameter(XMLUni::fgXercesHandleMultipleImports, true);
@@ -170,12 +173,16 @@ void XmlParser::InitializeXmlParser()
     {
         config->setParameter(XMLUni::fgDOMValidate, true);
     }
+    config->setParameter(XMLUni::fgXercesSchemaExternalNoNameSpaceSchemaLocation, "tele_types.xsd");
 
     // enable datatype normalization - default is off
     config->setParameter(XMLUni::fgDOMDatatypeNormalization, true);
 
-    XmlErrorReporter *errReporter = new XmlErrorReporter();
-    config->setParameter(XMLUni::fgDOMErrorHandler, errReporter);
+//    Grammar *pSchema= mParser->getGrammar(XMLString::transcode("http://www.w3.org/2001/XMLSchema"));
+//	if(pSchema != NULL)		
+//        cout<<"pSchema Not NULL "<<endl;
+    mErrorHandler = new XmlErrorReporter();
+    config->setParameter(XMLUni::fgDOMErrorHandler, mErrorHandler);
 }
 
 void XmlParser::UninitializeXmlParser()
@@ -185,6 +192,11 @@ void XmlParser::UninitializeXmlParser()
         mParser->release();
         mParser = NULL;
         mDocument = NULL;
+    }
+    if (mErrorHandler != NULL)
+    {
+        delete mErrorHandler;
+        mErrorHandler = NULL;
     }
 }
 

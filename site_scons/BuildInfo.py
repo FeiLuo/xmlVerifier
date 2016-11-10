@@ -17,7 +17,7 @@ def build_status():
     bf = GetBuildFailures()
     if bf:
         status = 'failed'
-        failures_messsage = "\n".join(["Failed building %s" % bf_str_str(x) for x in bf if x is not None])
+        failures_messsage = "\n".join(["Failed building %s" % bf_to_str(x) for x in bf if x is not None])
     else:
         status = 'ok'
         failures_messsage = ''

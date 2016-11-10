@@ -1,33 +1,39 @@
 #include "XmlErrorReporter.h"
-#include <xercesc/sax/SAXParseException.hpp>
-#include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include "XmlString.h"
+//#include <stdlib.h>
+//#include <string.h>
+#include <xercesc/dom/DOMError.hpp>
+#include <xercesc/dom/DOMLocator.hpp>
 
-void XmlErrorReporter::warning(const SAXParseException&)
+XmlErrorReporter::XmlErrorReporter() :
+
+    fSawErrors(false)
 {
-    //
-    // Ignore all warnings.
-    //
 }
 
-void XmlErrorReporter::error(const SAXParseException& toCatch)
+XmlErrorReporter::~XmlErrorReporter()
 {
-    fSawErrors = true;
-    cerr << "Error at file \"" << StrX(toCatch.getSystemId())
-		 << "\", line " << toCatch.getLineNumber()
-		 << ", column " << toCatch.getColumnNumber()
-         << "\n   Message: " << StrX(toCatch.getMessage()) << endl;
 }
 
-void XmlErrorReporter::fatalError(const SAXParseException& toCatch)
+
+// ---------------------------------------------------------------------------
+//  DOMCountHandlers: Overrides of the DOM ErrorHandler interface
+// ---------------------------------------------------------------------------
+bool XmlErrorReporter::handleError(const DOMError& domError)
 {
     fSawErrors = true;
-    cerr << "Fatal Error at file \"" << StrX(toCatch.getSystemId())
-		 << "\", line " << toCatch.getLineNumber()
-		 << ", column " << toCatch.getColumnNumber()
-         << "\n   Message: " << StrX(toCatch.getMessage()) << endl;
+    if (domError.getSeverity() == DOMError::DOM_SEVERITY_WARNING)
+        cerr << "\nWarning at file ";
+    else if (domError.getSeverity() == DOMError::DOM_SEVERITY_ERROR)
+        cerr << "\nError at file ";
+    else
+        cerr << "\nFatal Error at file ";
+
+    cerr << StrX(domError.getLocation()->getURI())
+         << ", line " << domError.getLocation()->getLineNumber()
+         << ", char " << domError.getLocation()->getColumnNumber()
+         << "\n  Message: " << StrX(domError.getMessage()) << XERCES_STD_QUALIFIER endl;
+
+    return true;
 }
 
 void XmlErrorReporter::resetErrors()

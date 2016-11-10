@@ -24,9 +24,9 @@ xerces_targets = [
 ]
 
 if env['config']['build'] == 'debug':
-    xerces_command = 'cd %s && ./configure CXX=g++ CC=gcc --host=x86-linux --disable-shared --enable-transcoder-iconv --disable-network CFLAGS=-O0 CXXFLAGS=-O0 && make clean && make' %(xerces_root)
+    xerces_command = 'cd %s && ./configure CXX=g++ CC=gcc --host=x86-linux --disable-shared --enable-transcoder-iconv --disable-network CFLAGS="-O0 -g3" CXXFLAGS="-O0 -g3" && make clean && make' %(xerces_root)
 else:
-    xerces_command = 'cd %s && ./configure CXX=g++ CC=gcc --host=x86-linux --disable-shared --enable-transcoder-iconv --disable-network CFLAGS=-O3 CXXFLAGS=-O3 && make clean && make' %(xerces_root)
+    xerces_command = 'cd %s && ./configure CXX=g++ CC=gcc --host=x86-linux --disable-shared --enable-transcoder-iconv --disable-network CFLAGS="-O3 -g0" CXXFLAGS="-O3 -g0" && make clean && make' %(xerces_root)
 xerceslib = env_xerces.Command(xerces_targets, xerces_sources, xerces_command)
 
 # copy xerces library

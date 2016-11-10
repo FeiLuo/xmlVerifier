@@ -9,8 +9,8 @@
 class XmlNode
 {
 public:
-    XmlNode();
-    virtual ~XmlNode();
+    XmlNode(){};
+    virtual ~XmlNode(){};
 
 protected:
     

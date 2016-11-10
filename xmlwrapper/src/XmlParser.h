@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "XmlErrorReporter.h"
 XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
@@ -20,7 +21,8 @@ public:
     XmlParser(const Uint8* data, const Uint32 len);
     XmlParser(const char* xmlFileName);
     ~XmlParser();
-    
+
+    inline Boolean IsParseError() { return mParseError; }
     inline ostringstream& ErrorMsg() { return mErrorMsg; }
     inline string  GetErrorMsg() { return mErrorMsg.str(); }
     
@@ -31,6 +33,7 @@ protected:
 private:
     DOMLSParser*    mParser;
     DOMDocument*    mDocument;
+    XmlErrorReporter* mErrorHandler;
     Boolean         mParseError;
     std::ostringstream   mErrorMsg;
 };

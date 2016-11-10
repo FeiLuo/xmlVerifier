@@ -1,40 +1,44 @@
 #ifndef XML_ERROR_REPORTER
 #define XML_ERROR_REPORTER
 
-#include <xercesc/util/XercesDefs.hpp>
-#include <xercesc/sax/ErrorHandler.hpp>
+#include <xercesc/dom/DOMErrorHandler.hpp>
+#include <xercesc/util/XMLString.hpp>
 #include <iostream>
+#include "XmlString.h"
 using namespace std;
 XERCES_CPP_NAMESPACE_USE
 
-class XmlErrorReporter : public ErrorHandler
+class XmlErrorReporter : public DOMErrorHandler
 {
+public:
 public:
     // -----------------------------------------------------------------------
     //  Constructors and Destructor
     // -----------------------------------------------------------------------
-    XmlErrorReporter() :
-       fSawErrors(false)
-    {
-    }
+    XmlErrorReporter();
+    ~XmlErrorReporter();
 
-    ~XmlErrorReporter()
-    {
-    }
-
-
-    // -----------------------------------------------------------------------
-    //  Implementation of the error handler interface
-    // -----------------------------------------------------------------------
-    void warning(const SAXParseException& toCatch);
-    void error(const SAXParseException& toCatch);
-    void fatalError(const SAXParseException& toCatch);
-    void resetErrors();
 
     // -----------------------------------------------------------------------
     //  Getter methods
     // -----------------------------------------------------------------------
     bool getSawErrors() const;
+
+
+    // -----------------------------------------------------------------------
+    //  Implementation of the DOM ErrorHandler interface
+    // -----------------------------------------------------------------------
+    bool handleError(const DOMError& domError);
+    void resetErrors();
+
+
+private :
+    // -----------------------------------------------------------------------
+    //  Unimplemented constructors and operators
+    // -----------------------------------------------------------------------
+    XmlErrorReporter(const XmlErrorReporter&);
+    void operator=(const XmlErrorReporter&);
+
 
     // -----------------------------------------------------------------------
     //  Private data members

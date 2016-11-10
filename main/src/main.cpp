@@ -18,9 +18,11 @@ void Uninitialize()
     XmlParser::Uninitialize();
 }
 
-void run_cases()
+void run_cases(const char* path)
 {
-    XmlParser parser("./xml/ipv4.xml");
+    XmlParser parser(path);
+    if (parser.IsParseError())
+        cout << parser.GetErrorMsg() << endl;
 }
 
 int main(int argc, char** argv)
@@ -28,7 +30,7 @@ int main(int argc, char** argv)
     cout << "xml verifier started: " << endl;
     Initialize();
 
-    run_cases();
+    run_cases(argv[1]);
 
     Uninitialize();
 
