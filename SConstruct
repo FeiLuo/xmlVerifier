@@ -95,6 +95,11 @@ else:
     cc_flags.append('-D_DEBUG_')
     config['build'] = 'debug'
 
+if config['build'] == 'debug':
+    cc_flags.append('-g3')
+else:
+    cc_flags.append('-g0')
+
 # Environments
 env = Environment(Env = os.environ)
 env['topdir'] = topdir

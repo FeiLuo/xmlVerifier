@@ -18,13 +18,21 @@ void Uninitialize()
     XmlParser::Uninitialize();
 }
 
+void run_cases()
+{
+    XmlParser parser("./xml/ipv4.xml");
+}
+
 int main(int argc, char** argv)
 {
+    cout << "xml verifier started: " << endl;
     Initialize();
 
-    
+    run_cases();
 
     Uninitialize();
+
+    cout << "xml verifier finished!" << endl;
     return 1;
 }
 

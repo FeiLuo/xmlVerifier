@@ -183,7 +183,6 @@ void XmlParser::UninitializeXmlParser()
     if (mParser != NULL)
     {
         mParser->release();
-        delete mParser;
         mParser = NULL;
         mDocument = NULL;
     }
