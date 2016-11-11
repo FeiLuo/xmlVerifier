@@ -20,13 +20,20 @@ XmlErrorReporter::~XmlErrorReporter()
 // ---------------------------------------------------------------------------
 bool XmlErrorReporter::handleError(const DOMError& domError)
 {
-    fSawErrors = true;
     if (domError.getSeverity() == DOMError::DOM_SEVERITY_WARNING)
+    {
         cerr << "\nWarning at file ";
+    }
     else if (domError.getSeverity() == DOMError::DOM_SEVERITY_ERROR)
+    {
+        fSawErrors = true;
         cerr << "\nError at file ";
+    }
     else
+    {
+        fSawErrors = true;
         cerr << "\nFatal Error at file ";
+    }
 
     cerr << StrX(domError.getLocation()->getURI())
          << ", line " << domError.getLocation()->getLineNumber()

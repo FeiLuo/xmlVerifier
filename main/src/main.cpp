@@ -22,7 +22,10 @@ void run_cases(const char* path)
 {
     XmlParser parser(path);
     if (parser.IsParseError())
-        cout << parser.GetErrorMsg() << endl;
+        cout << "Verify Failed:"
+             << parser.GetErrorMsg() << endl;
+    else
+        cout << "verify OK!" << endl;
 }
 
 int main(int argc, char** argv)
